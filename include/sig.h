@@ -1,0 +1,2 @@
+
+int block_sigpipe();

@@ -1,0 +1,12 @@
+#if 1
+#define ENABLE_MANAGEMENT
+#define MANAGEMENT_DEF_AUTH
+
+#define ENABLE_CRYPTO
+#define ENABLE_SSL
+
+#if defined(MANAGEMENT_DEF_AUTH) || defined(MANAGMENT_EXTERNAL_KEY)
+#define MANAGEMENT_IN_EXTRA
+#endif
+
+#endif
