@@ -12,7 +12,9 @@ openvpn의 프로토콜을 사용하여 openvpn과 호환이 가능하다.
  
  
  성능 비교.
+ 
  openvpn 최대 150Mbps
+ 
  dz-vpn 최대 1.2Gbps
  
  
