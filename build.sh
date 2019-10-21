@@ -9,6 +9,8 @@ POLARSSL=0
 
 make clean
 
+
+
 if [ $OPENSSL == 1 ]; then
 	M_INC=" $M_INC -DOPENSSL_CONF "
 	#M_LIB=" -L${BUILD_TMP}/.${PKG_NAME}_tmp/lib64 -lssl -lcrypto"
