@@ -6,6 +6,7 @@
 #include <openssl/err.h>
 
 
+unsigned char * x509_get_sha256_fingerprint(X509 *cert);
 extern int mydata_index;
 
 int verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
@@ -17,17 +18,18 @@ int verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
 	ssl = X509_STORE_CTX_get_ex_data (ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
 	epd = (struct epoll_ptr_data *) SSL_get_ex_data (ssl, mydata_index);
 
-	unsigned char *hash = x509_get_sha1_hash(ctx->current_cert);
-	cert_hash_remember(epd, ctx->error_depth, hash);
+	X509 *current_cert = X509_STORE_CTX_get_current_cert(ctx);
+	unsigned char *hash = x509_get_sha256_fingerprint(current_cert);
+	cert_hash_remember(epd, X509_STORE_CTX_get_error_depth(ctx), hash);
 	sfree(hash,SHA_DIGEST_LENGTH);
 
 	if (!preverify_ok)
 	{
-		char *subject = x509_get_subject(ctx->current_cert);
+		char *subject = x509_get_subject(current_cert);
 
 		if (subject)
 		{
-			MM( "VERIFY ERROR: depth=%d, error=%s: %s", ctx->error_depth, X509_verify_cert_error_string (ctx->error),subject);
+			MM( "VERIFY ERROR: depth=%d, error=%s: %s", X509_STORE_CTX_get_error_depth(ctx), X509_verify_cert_error_string (X509_STORE_CTX_get_error(ctx)),subject);
 		}
 
 		ERR_clear_error();
@@ -40,7 +42,7 @@ int verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
 		goto cleanup;
 	}
 
-	if (SUCCESS != verify_cert(epd, ctx->current_cert, ctx->error_depth)){
+	if (SUCCESS != verify_cert(epd, current_cert, X509_STORE_CTX_get_error_depth(ctx))){
 		goto cleanup;
 	}
 
@@ -196,7 +198,16 @@ char * backend_x509_get_serial_hex (openvpn_x509_cert_t *cert, struct gc_arena *
 }
 #endif
 
-#if 1
+unsigned char * x509_get_sha256_fingerprint(X509 *cert) {
+    const EVP_MD *sha256 = EVP_sha256();
+    unsigned char *hash = malloc(EVP_MD_size(sha256));
+    memset(hash,0x00,EVP_MD_size(sha256));
+    X509_digest(cert, EVP_sha256(), hash, NULL);
+    return hash;
+}
+
+
+#if 0
 unsigned char * x509_get_sha1_hash (X509 *cert)
 {
 	unsigned char *hash = malloc(SHA_DIGEST_LENGTH);

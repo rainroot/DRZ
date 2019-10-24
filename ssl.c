@@ -363,10 +363,10 @@ int pem_password_callback (char *buf, int size, int rwflag, void *u)
 
 void tls1_P_hash(const md_kt_t *md_kt,uint8_t *sec,int sec_len,uint8_t *seed,int seed_len,uint8_t *out,int olen)
 {
-#if 1
+#if 0
 	int chunk=0;
-	hmac_ctx_t ctx;
-	hmac_ctx_t ctx_tmp;
+	HMAC_CTX ctx;
+	HMAC_CTX ctx_tmp;
 	//uint8_t A1[MAX_HMAC_KEY_LENGTH];
 	uint8_t *A1 = malloc(MAX_HMAC_KEY_LENGTH);
 	memset(A1,0x00,MAX_HMAC_KEY_LENGTH);
@@ -374,8 +374,8 @@ void tls1_P_hash(const md_kt_t *md_kt,uint8_t *sec,int sec_len,uint8_t *seed,int
 	unsigned int A1_len;
 
 
-	memset(&ctx,0x00,sizeof(hmac_ctx_t));
-	memset(&ctx_tmp,0x00,sizeof(hmac_ctx_t));
+	memset(&ctx,0x00,sizeof(HMAC_CTX));
+	memset(&ctx_tmp,0x00,sizeof(HMAC_CTX));
 
 	chunk = md_kt_size(md_kt);
 	A1_len = md_kt_size(md_kt);

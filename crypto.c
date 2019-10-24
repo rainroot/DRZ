@@ -43,8 +43,9 @@ void init_key_ctx (struct key_ctx *ctx, struct key *key,const struct key_type *k
 			printf("####################################### ERROR %s %d ###################\n",__func__,__LINE__);
 			exit(0);
 		}
-		ctx->cipher[idx] = malloc(sizeof(cipher_ctx_t));
-		memset(ctx->cipher[idx],0x00,sizeof(cipher_ctx_t));
+		//ctx->cipher[idx] = malloc(sizeof(cipher_ctx_t));
+		//memset(ctx->cipher[idx],0x00,sizeof(cipher_ctx_t));
+		ctx->cipher[idx] = cipher_ctx_new();
 		cipher_ctx_init (ctx->cipher[idx],(uint8_t *)key->cipher, kt->cipher_length,kt->cipher, enc);
 
 	}
@@ -55,8 +56,9 @@ void init_key_ctx (struct key_ctx *ctx, struct key *key,const struct key_type *k
 			printf("####################################### ERROR %s %d ###################\n",__func__,__LINE__);
 			exit(0);
 		}
-		ctx->hmac[idx] = malloc(sizeof(hmac_ctx_t));
-		memset(ctx->hmac[idx],0x00,sizeof(hmac_ctx_t));
+		//ctx->hmac[idx] = malloc(sizeof(hmac_ctx_t));
+		//memset(ctx->hmac[idx],0x00,sizeof(hmac_ctx_t));
+		ctx->hmac[idx] = hmac_ctx_new();
 		hmac_ctx_init (ctx->hmac[idx], (uint8_t *)key->hmac, kt->hmac_length, kt->digest);
 	}
 }
@@ -67,20 +69,20 @@ void free_key_ctx (struct key_ctx *ctx,int idx)
 	if (ctx->cipher[idx] != NULL)
 	{
 		//printf("### %s %d free cipher[%d] ##\n",__func__,__LINE__,idx);
-		cipher_ctx_cleanup(ctx->cipher[idx]);
-		sfree(ctx->cipher[idx],sizeof(cipher_ctx_t));
+		//cipher_ctx_cleanup(ctx->cipher[idx]);
+		free(ctx->cipher[idx]);
+		//sfree(ctx->cipher[idx],sizeof(cipher_ctx_t));
 		ctx->cipher[idx] = NULL;
 	}
 	if (ctx->hmac[idx] != NULL)
 	{
 		//printf("### %s %d free hmac[%d] ##\n",__func__,__LINE__,idx);
-		hmac_ctx_cleanup(ctx->hmac[idx]);
-		sfree(ctx->hmac[idx],sizeof(hmac_ctx_t));
+		//hmac_ctx_cleanup(ctx->hmac[idx]);
+		free(ctx->hmac[idx]);
+		//sfree(ctx->hmac[idx],sizeof(hmac_ctx_t));
 		ctx->hmac[idx] = NULL;
 	}
-	//ctx->implicit_iv_len = 0;
 }
-
 
 
 bool key_is_zero (struct key *key, const struct key_type *kt)

@@ -358,7 +358,8 @@ int tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, char *pkcs12_file,char *pkcs12
 		{
 			for (i = 0; i < sk_X509_num(ca); i++)
 			{
-				if (!X509_STORE_add_cert(ctx->ctx->cert_store,sk_X509_value(ca, i))){
+				X509_STORE *cert_store = SSL_CTX_get_cert_store(ctx->ctx);
+				if (!X509_STORE_add_cert(cert_store,sk_X509_value(ca, i))){
 					MM( "Cannot add certificate to certificate chain (X509_STORE_add_cert)\n");
 				}
 				if (!SSL_CTX_add_client_CA(ctx->ctx, sk_X509_value(ca, i))){
@@ -430,7 +431,8 @@ void tls_ctx_load_cert_file_and_copy (struct tls_root_ctx *ctx, const char *cert
 		goto end;
 	}
 
-	x = PEM_read_bio_X509 (in, NULL, ctx->ctx->default_passwd_callback, ctx->ctx->default_passwd_callback_userdata);
+	//x = PEM_read_bio_X509 (in, NULL, ctx->ctx->default_passwd_callback, ctx->ctx->default_passwd_callback_userdata);
+	x = PEM_read_bio_X509 (in, NULL, SSL_CTX_get_default_passwd_cb(ctx->ctx), SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
 	if (x == NULL)
 	{
 		MM("## ERR: %s %d ##\n",__func__,__LINE__);
@@ -498,7 +500,8 @@ int tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
 		goto end;
 	}
 
-	pkey = PEM_read_bio_PrivateKey (in, NULL,ssl_ctx->default_passwd_callback,ssl_ctx->default_passwd_callback_userdata);
+	//pkey = PEM_read_bio_PrivateKey (in, NULL,ssl_ctx->default_passwd_callback,ssl_ctx->default_passwd_callback_userdata);
+	pkey = PEM_read_bio_PrivateKey (in, NULL,SSL_CTX_get_default_passwd_cb(ctx->ctx),SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
 	if (!pkey){
 		goto end;
 	}

@@ -9,6 +9,8 @@ static bool engine_initialized = false;
 static ENGINE *engine_persist = NULL;
 
 
+int EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc);
+
 ENGINE * try_load_engine (const char *engine)
 {
 	ENGINE *e = ENGINE_by_id ("dynamic");
@@ -123,14 +125,15 @@ int md_full (const EVP_MD *kt, const uint8_t *src, int src_len, uint8_t *dst)
 void md_ctx_init (EVP_MD_CTX *ctx, const EVP_MD *kt)
 {
 	assert(NULL != ctx && NULL != kt);
-	memset(ctx,0x00,sizeof(EVP_MD_CTX));
+	//memset(ctx,0x00,sizeof(EVP_MD_CTX));
 	EVP_MD_CTX_init (ctx);
 	EVP_DigestInit(ctx, kt);
 }
 
 void md_ctx_cleanup(EVP_MD_CTX *ctx)
 {
-	EVP_MD_CTX_cleanup(ctx);
+	//EVP_MD_CTX_cleanup(ctx);
+	EVP_MD_CTX_reset(ctx);
 }
 
 int md_ctx_size (const EVP_MD_CTX *ctx)
@@ -301,8 +304,14 @@ int cipher_kt_mode (const EVP_CIPHER *cipher_kt)
 }
 
 
+cipher_ctx_t * cipher_ctx_new(void) {
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    return ctx;
+}
 
-
+void cipher_ctx_free(EVP_CIPHER_CTX *ctx) {
+    EVP_CIPHER_CTX_free(ctx);
+}
 
 void cipher_ctx_init (EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len, const EVP_CIPHER *kt, int enc)
 {
@@ -363,11 +372,20 @@ int cipher_ctx_final (EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len)
 	return EVP_CipherFinal (ctx, dst, dst_len);
 }
 
+HMAC_CTX * hmac_ctx_new(void) {
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    return ctx;
+}
+
+void hmac_ctx_free(HMAC_CTX *ctx) {
+    HMAC_CTX_free(ctx);
+}
 
 void hmac_ctx_init (HMAC_CTX *ctx, const uint8_t *key, int key_len, const EVP_MD *kt)
 {
 	assert(NULL != kt && NULL != ctx);
-	HMAC_CTX_init (ctx);
+	//HMAC_CTX_init (ctx);
+	HMAC_CTX_reset(ctx);
 	HMAC_Init_ex (ctx, key, key_len, kt, NULL);
 	assert (HMAC_size (ctx) <= key_len);
 }
@@ -375,7 +393,8 @@ void hmac_ctx_init (HMAC_CTX *ctx, const uint8_t *key, int key_len, const EVP_MD
 void hmac_ctx_cleanup(HMAC_CTX *ctx)
 {
 	if(ctx != NULL){
-		HMAC_CTX_cleanup (ctx);
+		//HMAC_CTX_cleanup (ctx);
+		HMAC_CTX_reset(ctx);
 	}else{
 		printf("## ERR: EXIT %s %d ##\n",__func__,__LINE__);
 		exit(0);

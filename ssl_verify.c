@@ -199,6 +199,7 @@ result_t verify_cert(struct epoll_ptr_data *epd, openvpn_x509_cert_t *cert, int 
 
 	if (cert_depth == 1 && opt->verify_hash)
 	{
+#if 0
 		unsigned char *sha1_hash = x509_get_sha1_hash(cert);
 		if (memcmp (sha1_hash, opt->verify_hash, SHA_DIGEST_LENGTH))
 		{
@@ -208,6 +209,17 @@ result_t verify_cert(struct epoll_ptr_data *epd, openvpn_x509_cert_t *cert, int 
 		if(sha1_hash != NULL){
 			sfree(sha1_hash,SHA_DIGEST_LENGTH);
 		}
+#else
+		char * ca_hash = NULL;
+		const EVP_MD *sha256 = EVP_sha256();
+		ca_hash = x509_get_sha256_fingerprint(cert);
+		if (memcmp(ca_hash, opt->verify_hash, EVP_MD_size(sha256)))
+		{
+			MM("TLS Error: level-1 certificate hash verification failed \n");
+			goto cleanup;
+		}
+
+#endif
 	}
 
 	if (cert_depth == 0){

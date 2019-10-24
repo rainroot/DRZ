@@ -10,6 +10,9 @@
 #define MANAGEMENT_ECHO_FLAGS 0
 #endif
 
+bool man_password_needed (struct management *man);
+
+
 int mngt_process(struct main_data *md){
 printf("============================================ %s %d ============================\n",__func__,__LINE__);
 	struct options *opt = NULL;

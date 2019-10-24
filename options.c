@@ -1,5 +1,7 @@
 #include <rain_common.h>
 
+bool space (unsigned char c);
+
 const char title_string[] =
   PACKAGE_STRING
   " " TARGET_ALIAS
