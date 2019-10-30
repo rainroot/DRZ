@@ -37,10 +37,10 @@ char * print_opt_route (const in_addr_t network, const in_addr_t netmask,char *o
 	memset(str,0x00,64);
 	if (netmask){
 		print_in_addr_t (network, 0,str);
-		sprintf(out, "route %s",str);
+		out += sprintf(out, "route %s",str);
 		memset(str,0x00,64);
 		print_in_addr_t (netmask, 0,str);
-		sprintf(out, "%s %s", out,str);
+		out += sprintf(out, " %s",str);
 	}else{
 		print_in_addr_t (network, 0,str);
 		sprintf(out, "route %s",str);

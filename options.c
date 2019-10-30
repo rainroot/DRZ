@@ -2555,6 +2555,7 @@ void pre_pull_restore (struct options *o)
 
 //#ifdef ENABLE_OCC
 //char * options_string (const struct options *o, const struct frame *frame,struct tuntap *tt,bool remote)
+#if 0
 char * options_string (struct epoll_ptr_data *epd,bool remote,char *out)
 {
 
@@ -2565,7 +2566,6 @@ char * options_string (struct epoll_ptr_data *epd,bool remote,char *out)
 	o = (struct options *)md->opt;
 
 	sprintf(out, "V4");
-
 	sprintf(out, "%s,dev-type %s",out,dev_type_string (o->dev, o->dev_type));
 	//sprintf(out, ",link-mtu %d", EXPANDED_SIZE (frame));
 	//sprintf(out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
@@ -2711,7 +2711,166 @@ char * options_string (struct epoll_ptr_data *epd,bool remote,char *out)
 	}
 	return out;
 }
+#else
+char * options_string (struct epoll_ptr_data *epd,bool remote,char *out) {
 
+	struct main_data *md=NULL;
+	md = (struct main_data *)epd->gl_var;
+
+	struct options *o = NULL;
+	o = (struct options *)md->opt;
+	char * t_out = out;
+
+	t_out += sprintf(t_out, "V4");
+	t_out += sprintf(t_out, ",dev-type %s",dev_type_string (o->dev, o->dev_type));
+	//t_out += sprintf(t_out, ",link-mtu %d", EXPANDED_SIZE (frame));
+	//t_out += sprintf(t_out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
+	t_out += sprintf(t_out, ",link-mtu 1539");
+	t_out += sprintf(t_out, ",tun-mtu 1532");
+	t_out += sprintf(t_out, ",proto %s",proto2ascii (proto_remote (o->ce.proto, remote), true));
+
+	/* send tun_ipv6 only in peer2peer mode - in client/server mode, it
+	 * is usually pushed by the server, triggering a non-helpful warning
+	 */
+	if (o->tun_ipv6 && o->mode == CLIENT && !PULL_DEFINED(o)){
+		t_out += sprintf (t_out, ",tun-ipv6");
+	}
+#if 0
+	/*
+	 * Try to get ifconfig parameters into the options string.
+	 * If tt is undefined, make a temporary instantiation.
+	 */
+	if (!tt)
+	{
+		tt = init_tun (o->dev,
+				o->dev_type,
+				o->topology,
+				o->ifconfig_local,
+				o->ifconfig_remote_netmask,
+				o->ifconfig_ipv6_local,
+				o->ifconfig_ipv6_netbits,
+				o->ifconfig_ipv6_remote,
+				(in_addr_t)0,
+				(in_addr_t)0,
+				false,
+				NULL);
+		if (tt){
+			tt_local = true;
+		}
+	}
+#endif
+
+	if (o->mode == CLIENT && !PULL_DEFINED(o))
+	{
+		const char *ios = ifconfig_options_string (epd,remote);
+		if (ios && strlen (ios)){
+			t_out += sprintf(t_out,",ifconfig %s",ios);
+		}
+	}
+#if 0
+	if (tt_local)
+	{
+		free (tt);
+		tt = NULL;
+	}
+#endif
+
+#if 0
+	if (o->lzo & LZO_SELECTED){
+		t_out += sprintf (t_out,"comp-lzo");
+	}
+#endif
+
+	if (o->ce.fragment){
+		t_out += sprintf (t_out,",mtu-dynamic");
+	}
+
+	/*
+	 * Key direction
+	 */
+	{
+		char *kd = keydirection2ascii (o->key_direction, remote);
+		if (kd){
+			t_out += sprintf (t_out, ",keydir %s",kd);
+		}
+	}
+
+	/*
+	 * Crypto Options
+	 */
+	if (o->shared_secret_file || TLS_CLIENT || TLS_SERVER)
+	{
+		struct key_type kt;
+
+		if(!((o->shared_secret_file != NULL) + (TLS_CLIENT == true) + (TLS_SERVER == true) <= 1)){
+			MM("## %s %d ##\n",__func__,__LINE__);
+		}
+
+		init_key_type (&kt, o->ciphername, o->authname,o->keysize, true);
+
+		if(o->ciphername_defined == false){
+			t_out += sprintf (t_out, ",cipher %s",cipher_kt_name (NULL));
+		}else{
+			t_out += sprintf (t_out, ",cipher %s",cipher_kt_name (kt.cipher));
+		}
+		if(o->authname_defined == false){
+			t_out += sprintf (t_out, ",auth %s",(char *)md_kt_name (NULL));
+		}else{
+			t_out += sprintf (t_out, ",auth %s",(char *)md_kt_name (kt.digest));
+		}
+		t_out += sprintf (t_out, ",keysize %d",kt.cipher_length * 8);
+		if (o->shared_secret_file){
+			t_out += sprintf (t_out, ",secret");
+		}
+		if (!o->replay){
+			t_out += sprintf (t_out,",no-replay");
+		}
+		if (!o->use_iv){
+			t_out += sprintf (t_out,",no-iv");
+		}
+
+		//#ifdef ENABLE_PREDICTION_RESISTANCE
+		if (o->use_prediction_resistance){
+			t_out += sprintf (t_out,",use-prediction-resistance");
+		}
+		//#endif
+	}
+
+	{
+		if (TLS_CLIENT || TLS_SERVER)
+		{
+			if (o->tls_auth_file){
+				t_out += sprintf (t_out,",tls-auth");
+			}
+
+			if (o->key_method > 1){
+				t_out += sprintf (t_out,",key-method %d",o->key_method);
+			}
+		}
+
+		if (remote)
+		{
+			if (TLS_CLIENT){
+				t_out += sprintf (t_out,",tls-server");
+			}else if (TLS_SERVER){
+				t_out += sprintf (t_out,",tls-client");
+			}
+		}
+		else
+		{
+			if (TLS_CLIENT){
+				t_out += sprintf (t_out,",tls-client");
+			}else if (TLS_SERVER){
+				t_out += sprintf (t_out,",tls-server");
+			}
+		}
+	}
+	return t_out;
+}
+
+
+
+#endif
 #if 0
 bool options_cmp_equal (char *actual, const char *expected)
 {

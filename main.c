@@ -75,9 +75,9 @@ bool gen_path (char *directory, char *filename,char *out)
 			printf("## %s %d ##\n",__func__,__LINE__);
 #endif
 			if (directory){
-				sprintf(out,"%s/",directory);
+				out += sprintf(out,"%s/",directory);
 			}
-			sprintf (out, "%s%s",out,safe_filename);
+			out += sprintf (out, "%s",safe_filename);
 
 			free(safe_filename);
 			return true;

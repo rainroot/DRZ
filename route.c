@@ -158,9 +158,9 @@ char * route_string (struct route_ipv4 *r)
 	print_in_addr_t(r->netmask,0,netmask);
 	print_in_addr_t(r->gateway,0,gateway);
 
-	sprintf (out,"ROUTE network %s netmask %s gateway %s",network,netmask,gateway);
+	out += sprintf (out,"ROUTE network %s netmask %s gateway %s",network,netmask,gateway);
 	if (r->flags & RT_METRIC_DEFINED){
-		sprintf (out, "%s metric %d",out, r->metric);
+		out += sprintf (out, " metric %d", r->metric);
 	}
 	return out;
 }
@@ -863,20 +863,20 @@ void print_default_gateway(struct route_gateway_info *rgi)
 		memset(out,0x00,256);
 		sprintf (out, "ROUTE_GATEWAY");
 		if (rgi->flags & RGI_ON_LINK){
-			sprintf (out, "%s ON_LINK",out);
+			out += sprintf (out, " ON_LINK");
 		}else{
 			print_in_addr_t (rgi->gateway.addr, 0,str0);
-			sprintf (out, "%s %s",out,str0);
+			out += sprintf (out, " %s",str0);
 		}
 		if (rgi->flags & RGI_NETMASK_DEFINED){
 			print_in_addr_t (rgi->gateway.netmask, 0,str1);
-			sprintf (out, "%s/%s",out, str1);
+			out += sprintf (out, "/%s", str1);
 		}
 		if (rgi->flags & RGI_IFACE_DEFINED){
-			sprintf (out, "%s IFACE=%s",out, rgi->iface);
+			out += sprintf (out, " IFACE=%s", rgi->iface);
 		}
 		if (rgi->flags & RGI_HWADDR_DEFINED){
-			//sprintf (out, "%s HWADDR=%s",out, format_hex_ex (rgi->hwaddr, 6, 0, 1, ":", &gc));
+			//out += sprintf (out, " HWADDR=%s", format_hex_ex (rgi->hwaddr, 6, 0, 1, ":", &gc));
 		}
 		MM("%s\n",out);
 		free(out);
@@ -956,14 +956,14 @@ void add_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,str
 		goto done;
 	}
 
-	sprintf (out, "%s add -net %s netmask %s",ROUTE_PATH,network,netmask);
+	out += sprintf (out, "%s add -net %s netmask %s",ROUTE_PATH,network,netmask);
 	if (r->flags & RT_METRIC_DEFINED){
-		sprintf(out, "%s metric %d",out,r->metric);
+		out += sprintf(out, " metric %d",r->metric);
 	}
 	if (is_on_link (is_local_route, flags, rgi)){
-		sprintf(out,"%s dev %s",out,rgi->iface);
+		out += sprintf(out," dev %s",rgi->iface);
 	}else{
-		sprintf(out, "%s gw %s",out,gateway);
+		out += sprintf(out, " gw %s",gateway);
 	}
 	status = system(out);
 printf("## %s %d %s ##\n",__func__,__LINE__,out);
@@ -1031,12 +1031,12 @@ void add_route_ipv6 (struct route_ipv6 *r6,struct options *opt , unsigned int fl
 		gateway_needed = true;
 	}
 
-	sprintf(out, "%s -A inet6 add %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
+	out += sprintf(out, "%s -A inet6 add %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
 	if (gateway_needed){
-		sprintf(out, "%s gw %s",out,gateway);
+		out += sprintf(out, " gw %s",gateway);
 	}
 	if (r6->metric_defined && r6->metric > 0 ){
-		sprintf(out, "%s metric %d",out, r6->metric);
+		out += sprintf(out, " metric %d", r6->metric);
 	}
 
 	status = system(out);
@@ -1067,13 +1067,13 @@ void delete_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,
 
 	is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
 	if (is_local_route == LR_ERROR){
-			printf("## end %s %d ##\n",__func__,__LINE__);
+		printf("## end %s %d ##\n",__func__,__LINE__);
 		goto done;
 	}
 
-	sprintf(out, "%s del -net %s netmask %s", ROUTE_PATH,network,netmask);
+	out += sprintf(out, "%s del -net %s netmask %s", ROUTE_PATH,network,netmask);
 	if (r->flags & RT_METRIC_DEFINED){
-		sprintf(out, "%s metric %d",out,r->metric);
+		out += sprintf(out, " metric %d",r->metric);
 	}
 	system(out);
 	printf("## %s %d %s ##\n",__func__,__LINE__,out);
@@ -1117,12 +1117,12 @@ void delete_route_ipv6 (struct route_ipv6 *r6,struct options *opt, unsigned int 
 		gateway_needed = true;
 	}
 
-	sprintf (out, "%s -A inet6 del %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
+	out += sprintf (out, "%s -A inet6 del %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
 	if (gateway_needed){
-		sprintf(out, "%s gw %s",out,gateway);
+		out += sprintf(out, " gw %s",gateway);
 	}
 	if (r6->metric_defined && r6->metric > 0 ){
-		sprintf(out, "%s  metric %d",out,r6->metric);
+		out += sprintf(out, "  metric %d",r6->metric);
 	}
 
 	MM("## %s %d %s ##\n",__func__,__LINE__,out);

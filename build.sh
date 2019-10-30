@@ -24,9 +24,11 @@ elif [ $MBEDTLS == 1 ]; then
 	S_LIB=" ${BUILD_TMP}/.${PKG_NAME}_tmp/lib/libmbedcrypto.a ${BUILD_TMP}/.${PKG_NAME}_tmp/lib/libmbedx509.a ${BUILD_TMP}/.${PKG_NAME}_tmp/lib/libmbedtls.a "
 fi
 #M_INC="$M_INC -I${BUILD_TMP}/.${PKG_NAME}_tmp/include -DENABLE_MANAGEMENT " 
+#M_LIB=" -L${BUILD_TMP}/.${PKG_NAME}_tmp/lib -lpthread -lz -dl $M_LIB" \
+#M_INC="$M_INC -I${BUILD_TMP}/.${PKG_NAME}_tmp/include " \
 
-M_INC="$M_INC -I${BUILD_TMP}/.${PKG_NAME}_tmp/include " \
-M_LIB=" -L${BUILD_TMP}/.${PKG_NAME}_tmp/lib -lpthread -lz -dl $M_LIB" \
+M_INC="$M_INC " \
+M_LIB=" -lpthread -lz -dl $M_LIB" \
 S_LIB=" $S_LIB " \
 CC=${CROSS_COMPILE}gcc \
 CXX=${CROSS_COMPILE}g++ \

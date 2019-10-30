@@ -18,7 +18,7 @@ char * print_argv (char **p, unsigned int flags)
 {
 	char *out = malloc(256);
 	memset(out,0x00,256);
-
+	char *f_out = out;
 	int i = 0;
 	for (;;)
 	{
@@ -27,16 +27,17 @@ char * print_argv (char **p, unsigned int flags)
 			break;
 		}
 		if (i){
-			sprintf(out,"%s ",out);
+			//out += sprintf(out,"%s ");
+			out += sprintf(out," ");
 		}
 		if (flags & PA_BRACKET){
-			sprintf(out,"%s[%s]",out,cp);
+			out += sprintf(out,"[%s]",cp);
 		}else{
-			sprintf(out,"%s%s",out,cp);
+			out += sprintf(out,"%s",cp);
 		}
 		++i;
 	}
-	return out;
+	return f_out;
 }
 
 
@@ -176,16 +177,16 @@ int ctl_msg_process(struct epoll_ptr_data *epd,char *out)
 		}
 
 		char *cmd = "PUSH_REPLY";
-		sprintf(out,"%s",cmd);
+		out += sprintf(out,"%s",cmd);
 		if (md->opt->push_ifconfig_ipv6_defined){
-			sprintf(out,"%s,ifconfig-ipv6 %s/%d %s",out,
+			out += sprintf(out,",ifconfig-ipv6 %s/%d %s",
 					print_in6_addr(md->opt->push_ifconfig_ipv6_local, 0),
 					md->opt->push_ifconfig_ipv6_netbits,
 					print_in6_addr(md->opt->push_ifconfig_ipv6_remote, 0));
 		}
 		while(e){
 			if(e->enable){
-				sprintf(out,"%s,%s",out,e->option);
+				out += sprintf(out,",%s",e->option);
 			}
 			e = e->next;
 		}
@@ -206,8 +207,8 @@ int ctl_msg_process(struct epoll_ptr_data *epd,char *out)
 				in_addr_t ifconfig_netmask = ret_utd->netmask;
 				print_in_addr_t(ifconfig_current,0,str0);
 				print_in_addr_t(ifconfig_netmask,0,str1);
-				sprintf(out,"%s,ifconfig %s", out,str0);
-				sprintf(out,"%s %s", out,str1);
+				out += sprintf(out,",ifconfig %s",str0);
+				out += sprintf(out," %s",str1);
 			}else{
 				if((md->opt->server_bridge_pool_current  == 0) || (md->opt->server_bridge_pool_current > md->opt->server_bridge_pool_end)){
 					md->opt->server_bridge_pool_current = md->opt->server_bridge_pool_start;
@@ -218,8 +219,8 @@ int ctl_msg_process(struct epoll_ptr_data *epd,char *out)
 				in_addr_t ifconfig_netmask = md->opt->server_bridge_netmask;
 				print_in_addr_t(ifconfig_current,0,str0);
 				print_in_addr_t(ifconfig_netmask,0,str1);
-				sprintf(out,"%s,ifconfig %s", out,str0);
-				sprintf(out,"%s %s", out,str1);
+				out += sprintf(out,",ifconfig %s",str0);
+				out += sprintf(out," %s",str1);
 
 				ret_utd = malloc(sizeof(struct user_tree_data));
 				memset(ret_utd,0x00,sizeof(struct user_tree_data));
@@ -245,8 +246,8 @@ int ctl_msg_process(struct epoll_ptr_data *epd,char *out)
 				in_addr_t ifconfig_netmask = ret_utd->netmask;
 				print_in_addr_t(ifconfig_current,0,str0);
 				print_in_addr_t(ifconfig_netmask,0,str1);
-				sprintf(out,"%s,ifconfig %s", out,str0);
-				sprintf(out,"%s %s", out,str1);
+				out += sprintf(out,",ifconfig %s",str0);
+				out += sprintf(out," %s",str1);
 				option_iroute(md->opt,str0,"255.255.255.255",epd);
 			}else{
 				if((md->opt->server_pool_current == 0) || (md->opt->server_pool_current > md->opt->server_pool_end)){
@@ -262,8 +263,8 @@ int ctl_msg_process(struct epoll_ptr_data *epd,char *out)
 				in_addr_t ifconfig_current = md->opt->server_pool_current;
 				print_in_addr_t(ifconfig_current,0,str0);
 				print_in_addr_t(ifconfig_netmask,0,str1);
-				sprintf(out,"%s,ifconfig %s", out,str0);
-				sprintf(out,"%s %s", out,str1);
+				out += sprintf(out,",ifconfig %s", str0);
+				out += sprintf(out," %s", str1);
 				option_iroute(md->opt,str0,"255.255.255.255",epd);
 				if(md->opt->ifconfig_pool_persist_filename != NULL){
 					char str_cmd[1024]={0,};
