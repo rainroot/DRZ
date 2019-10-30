@@ -58,18 +58,24 @@ RSA * tmp_rsa_cb (SSL * s, int b, int keylength)
 
 void tls_ctx_server_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
 {
+	if(ssl_flags){}
 	printf("############# %s %d #################################=================================\n",__func__,__LINE__);
-	const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
+	//const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
 	if(ctx == NULL){
 		MM("# ERR: EXIT()  %s %d ctx = NULL  ##\n",__func__,__LINE__);
 		exit(0);
 	}else{
 
+#if 0
 		if (tls_version_min > TLS_VER_UNSPEC){
 			ctx->ctx = SSL_CTX_new (SSLv23_server_method ());
 		}else{
 			ctx->ctx = SSL_CTX_new (TLSv1_server_method ());
 		}
+#else
+		ctx->ctx = SSL_CTX_new (SSLv23_server_method ());
+
+#endif
 
 		if (ctx->ctx == NULL){
 			MM( "SSL_CTX_new SSLv23_server_method");
@@ -82,18 +88,25 @@ void tls_ctx_server_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
 
 void tls_ctx_client_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
 {
-	const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
+	if(ssl_flags){}
+
+	//const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
 
 	if(ctx == NULL){
 		MM("# ERR : EXIT() %s %d ctx = NULL  ##\n",__func__,__LINE__);
 		exit(0);
 	}else{
 
+#if 0
 		if (tls_version_min > TLS_VER_UNSPEC){
 			ctx->ctx = SSL_CTX_new (SSLv23_client_method ());
 		}else{
 			ctx->ctx = SSL_CTX_new (TLSv1_client_method ());
 		}
+#else
+
+		ctx->ctx = SSL_CTX_new (SSLv23_client_method ());
+#endif
 
 		if (ctx->ctx == NULL){
 			MM("ERR : EXIT() %s %d SSL_CTX_new SSLv23_client_method\n",__func__,__LINE__);
@@ -673,7 +686,7 @@ void tls_ctx_load_extra_certs (struct tls_root_ctx *ctx, const char *extra_certs
 }
 
 
-BIO * getbio (BIO_METHOD * type, const char *desc)
+BIO * getbio (const BIO_METHOD * type, const char *desc)
 {
 	BIO *ret;
 	ret = BIO_new (type);
@@ -906,6 +919,8 @@ void key_state_ssl_remove(struct epoll_ptr_data *epd,bool all)
 
 void key_state_ssl_free(struct key_state_ssl *ks_ssl,bool all)
 {
+	if(ks_ssl){}
+	if(all){}
 #if 0
 	if(all == true){
 #if 0

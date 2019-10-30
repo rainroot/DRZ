@@ -2,9 +2,10 @@
 
 int send_thread_process(struct main_data *md,int type)
 {
+#if 0
 	struct options *opt = NULL;
 	opt = md->opt;
-
+#endif
 	struct pth_timer_data *p_t_d = NULL;
 	p_t_d = malloc(sizeof(struct pth_timer_data));
 	if(p_t_d == NULL){
@@ -648,22 +649,22 @@ int packet_thd(struct pth_timer_data *p_t_d)
 	int lt_s=0;
 
 	int ping_ft_s=0;
-	int ping_lt_s=0;
+	//int ping_lt_s=0;
 
-	struct timeval T_time;
+	//struct timeval T_time;
 #if 0
 	struct timeval *T_time = malloc(sizeof(struct timeval));
 	memset(T_time,0x00,sizeof(struct timeval));
 	gettimeofday(T_time,NULL);
 #endif
-	int T_ft_s=0;
-	int T_lt_s=0;
+	//int T_ft_s=0;
+	//int T_lt_s=0;
 	int renego_sec_time = 0;
 
 	struct list_data *now=NULL;
 
 	int i=0;
-	int f_ping_cnt = 0;
+	//int f_ping_cnt = 0;
 
 	if(epd->thd_mode == THREAD_TUN){
 		tun_net_pipe_fd = epd->t_fdd->tun_rfd;
@@ -862,11 +863,12 @@ int packet_thd(struct pth_timer_data *p_t_d)
 		}
 		if(epd->thd_mode == THREAD_NET && epd->stop == 1){
 			if(md->opt->mode == SERVER){
+#if 0
 				unsigned long all_packet_cnt = 0;
 				pthread_mutex_lock(&epd->all_packet_cnt_mutex);
 				all_packet_cnt = epd->all_packet_cnt;
 				pthread_mutex_unlock(&epd->all_packet_cnt_mutex);
-
+#endif
 				struct user_data *pud=NULL;
 				struct user_data *ud=malloc(sizeof(struct user_data));
 				if(ud == NULL){

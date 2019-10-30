@@ -5,8 +5,7 @@ void init_key_type (struct key_type *kt, const char *ciphername, const char *aut
 	if (ciphername != NULL)
 	{
 		kt->cipher = cipher_kt_get (translate_cipher_name_from_openvpn(ciphername));
-		//kt->cipher_length = cipher_kt_key_size ((EVP_CIPHER *)kt->cipher);
-		kt->cipher_length = cipher_kt_key_size (kt->cipher);
+		kt->cipher_length = cipher_kt_key_size ((EVP_CIPHER *)kt->cipher);
 
 		if (keysize > 0 && keysize <= MAX_CIPHER_KEY_LENGTH){
 			kt->cipher_length = keysize;

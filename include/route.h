@@ -187,3 +187,4 @@ struct route_ipv6_list * new_route_ipv6_list (int max_routes);
 bool init_route_list (struct route_list *rl, struct route_option_list *opt,const char *remote_endpoint,int default_metric,in_addr_t remote_host);
 void do_init_route_list (struct epoll_ptr_data *epd,struct options *options);
 void add_routes (struct route_list *rl, struct route_ipv6_list *rl6,struct options *opt, unsigned int flags);
+void delete_routes (struct route_list *rl, struct route_ipv6_list *rl6, struct options *opt, unsigned int flags);

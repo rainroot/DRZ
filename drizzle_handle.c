@@ -49,29 +49,29 @@ int TPT_sync_thd(struct pth_timer_data *p_t_d)
 	struct user_data ct_ud;
 	struct user_data *ct_pud = NULL;
 
-	struct user_data net_ud;
-	struct user_data *net_pud = NULL;
+	//struct user_data net_ud;
+	//struct user_data *net_pud = NULL;
 
 	struct packet_idx_tree_data *get_pitd=NULL;
 	struct packet_idx_tree_data tmp_pitd;
 
 	struct epoll_ptr_data *pipe_epd=NULL;
 	struct epoll_ptr_data *src_epd=NULL;
-	struct epoll_ptr_data *net_epd=NULL;
+	//struct epoll_ptr_data *net_epd=NULL;
 
 	bool packet_drop = false;
 	bool loop = true;
-	unsigned long loop_count = 0;
+	//unsigned long loop_count = 0;
 
-   struct internal_header ih;
-   int i=0;
+   //struct internal_header ih;
+   //int i=0;
    int nfds = 0;
    int event_count = 64;
    struct epoll_event events[event_count];
 	md->loop_epoll = true;
 	while(md->loop_epoll){
 		loop = true;
-		i = 0;
+		//i = 0;
 		nfds = 0;
 		nfds = epoll_wait(epd->epoll_fd,events,event_count,1);
 
@@ -207,26 +207,26 @@ int NPT_sync_thd(struct pth_timer_data *p_t_d)
 	opt = md->opt;
 
 	struct epoll_ptr_data *pipe_epd=NULL;
-	struct epoll_ptr_data *net_epd=NULL;
+	//struct epoll_ptr_data *net_epd=NULL;
 
 	struct user_data ct_ud;
 	struct user_data *ct_pud = NULL;
 
-	struct user_data net_ud;
-	struct user_data *net_pud = NULL;
+	//struct user_data net_ud;
+	//struct user_data *net_pud = NULL;
 
 	struct packet_idx_tree_data *get_pitd=NULL;
 	struct packet_idx_tree_data tmp_pitd;
 
-	unsigned long data_send_idx = 0;
+	//unsigned long data_send_idx = 0;
 	bool loop = true;
 	bool gitd_delete = false;
 
-	unsigned long rb_count = 0;
+	//unsigned long rb_count = 0;
 	get_pitd = NULL;
 
-   struct internal_header ih;
-   int i=0;
+   //struct internal_header ih;
+   //int i=0;
    int nfds = 0;
    int event_count = 64;
    struct epoll_event events[event_count];
@@ -234,7 +234,7 @@ int NPT_sync_thd(struct pth_timer_data *p_t_d)
 	while(md->loop_epoll){
 		loop = true;
 
-		i = 0;
+		//i = 0;
 		nfds = epoll_wait(epd->epoll_fd,events,event_count,1);
 		if(nfds > 0){
 		}else if(nfds < 0){
@@ -341,6 +341,8 @@ int NPT_sync_thd(struct pth_timer_data *p_t_d)
 }
 
 int TPT_sync_handle(struct epoll_ptr_data *epd,unsigned int idx){
+	if(epd){}
+	if(idx){}
 	int ret = 0;
 	return ret;
 }
@@ -349,10 +351,10 @@ int TPT_sync_handle(struct epoll_ptr_data *epd,unsigned int idx){
 int NPT_sync_handle(struct epoll_ptr_data *epd,unsigned int idx){
 	int ret = 0;
 	unsigned long data_send_idx = 0;
-	unsigned long net_idx = 0;
-	bool loop = true;
+	//unsigned long net_idx = 0;
+	//bool loop = true;
 	struct epoll_ptr_data *pipe_epd=NULL;
-	struct epoll_ptr_data *net_epd=NULL;
+	//struct epoll_ptr_data *net_epd=NULL;
 	struct main_data *md = NULL;
 	struct options *opt = NULL;
 	md = (struct main_data *)epd->gl_var;
@@ -361,20 +363,20 @@ int NPT_sync_handle(struct epoll_ptr_data *epd,unsigned int idx){
 	struct user_data ct_ud;
 	struct user_data *ct_pud = NULL;
 
-	struct user_data net_ud;
-	struct user_data *net_pud = NULL;
+	//struct user_data net_ud;
+	//struct user_data *net_pud = NULL;
 
 	struct packet_idx_tree_data *get_pitd=NULL;
 	struct packet_idx_tree_data tmp_pitd;
 
-	bool gitd_delete = false;
+	//bool gitd_delete = false;
 
 
-	unsigned long rb_count = 0;
+	//unsigned long rb_count = 0;
 	struct internal_header tmp_ih;
 	memset((char *)&tmp_ih,0x00,sizeof(struct internal_header));
 
-	int send_count = 0;
+	//int send_count = 0;
 	tmp_pitd.key	= idx;
 	pthread_mutex_lock(&md->TPT_tree_mutex);
 	get_pitd 		= rb_find(md->TPT_idx_tree,(char *)&tmp_pitd);
@@ -481,7 +483,7 @@ int tun_FD_recv_handle(struct epoll_ptr_data *epd)
 	int ret = 0;
 	int recv_len = 0;
 	int ret_in_out=0;
-	uint32_t packet_idx = 0;
+	//uint32_t packet_idx = 0;
 	struct main_data *md = NULL;
 	struct options *opt = NULL;
 	struct internal_header *ih=NULL;
@@ -980,7 +982,7 @@ int pipe_SEND_handle(struct epoll_ptr_data *epd,char *write_buff,int write_len)
 }
 
 
-extern uint8_t ping_data;
+extern char ping_data[];
 
 int ping_SEND_handle(struct epoll_ptr_data *epd)
 {
@@ -992,7 +994,7 @@ int ping_SEND_handle(struct epoll_ptr_data *epd)
 	opt = md->opt;
 	struct packet_idx_tree_data *pitd=NULL;
 	struct internal_header *hih=NULL;
-	uint32_t packet_idx = 0;
+	//uint32_t packet_idx = 0;
 
 	char * rb_i_ret = NULL;
 	struct epoll_ptr_data *pipe_epd=NULL;
@@ -1081,7 +1083,7 @@ int ALL_SEND_handle(struct epoll_ptr_data *epd,int fd,char *data,int len)
 	opt = md->opt;
 	struct packet_idx_tree_data *pitd=NULL;
 	struct internal_header *hih=NULL;
-	uint32_t packet_idx = 0;
+	//uint32_t packet_idx = 0;
 	int ret_in_out=0;
 	int tun_type;
 	char * rb_i_ret = NULL;

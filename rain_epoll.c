@@ -111,12 +111,12 @@ unsigned long epoll_event_exec(struct epoll_ptr_data *epd,int net_tun_pipe_fd)
 
 
 #if 1
-	bool TPT_wait = false;
-	bool NPT_wait = false;
-	uint32_t TPT_idx=0;
-	uint32_t T_TPT_idx=0;
-	uint32_t NPT_idx=0;
-	uint32_t T_NPT_idx=0;
+	//bool TPT_wait = false;
+	//bool NPT_wait = false;
+	//uint32_t TPT_idx=0;
+	//uint32_t T_TPT_idx=0;
+	//uint32_t NPT_idx=0;
+	//uint32_t T_NPT_idx=0;
 	uint32_t rb_count=0;
 
 	struct timespec sleeptime;

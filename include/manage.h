@@ -49,9 +49,9 @@ struct man_def_auth_context {
 
 struct command_line
 {
-	char *buf;
+	char buf[4096];
 	int buf_len;
-	char *residual;
+	char residual[4096];
 	int residual_len;
 };
 
@@ -113,13 +113,8 @@ struct management_callback
 	int (*n_clients) (void *arg);
 #ifdef MANAGEMENT_DEF_AUTH
 	bool (*kill_by_cid) (void *arg, const unsigned long cid, const char *kill_msg);
-	bool (*client_auth) (void *arg,
-			const unsigned long cid,
-			const unsigned int mda_key_id,
-			const bool auth,
-			const char *reason,
-			const char *client_reason,
-			struct buffer_list *cc_config);
+	//bool (*client_auth) (void *arg,unsigned long cid,unsigned int mda_key_id,bool auth,char *reason,char *client_reason,struct buffer_list *cc_config);
+	bool (*client_auth) (void *arg,unsigned long cid,unsigned int mda_key_id,bool auth,char *reason,char *client_reason);
 	char *(*get_peer_info) (void *arg, const unsigned long cid);
 #endif
 #ifdef MANAGEMENT_PF
@@ -207,7 +202,7 @@ struct man_connection {
 
 	struct command_line *in;
 	//struct buffer_list *out;
-	char *out;
+	char out[4096];
 	int out_len;
 
 #ifdef MANAGEMENT_IN_EXTRA
@@ -234,8 +229,11 @@ struct man_connection {
 	int ext_key_input_len;
 #endif
 #endif
+
+#if 0
 	struct event_set *es;
 	int env_filter_level;
+#endif
 
 	bool state_realtime;
 	bool log_realtime;
@@ -256,9 +254,10 @@ struct man_connection {
 
 struct management
 {
-  struct man_persist persist;
-  struct man_settings settings;
-  struct man_connection connection;
+	bool welcome;
+	struct man_persist persist;
+	struct man_settings settings;
+	struct man_connection connection;
 };
 
 //extern struct management *management;
@@ -303,13 +302,14 @@ struct management
 
 #define OPENVPN_STATE_CLIENT_BASE   7
 
-
+int mngt_process(struct main_data *md);
 bool management_open (struct management *man,const char *addr,const int port,const char *pass_file,const char *client_user,const char *client_group,const int log_history_cache,const int echo_buffer_size,const int state_buffer_size,const char *write_peer_info_file,const int remap_sigusr1,const unsigned int flags);
-struct management * management_init (void);
+struct management * management_init (struct management *man);
+
 int mngt_server_process(struct pth_timer_data *p_t_d);
 const struct log_entry * log_history_ref (const struct log_history *h, const int index);
 void log_history_resize (struct log_history *h, const int capacity);
-struct log_histrory * log_history_init (const int capacity);
+struct log_history * log_history_init (const int capacity);
 void log_history_close (struct log_history *h);
 void log_history_add (struct log_history *h, const struct log_entry *le);
 const char * man_state_name (const int state);
@@ -320,5 +320,12 @@ void command_line_free (struct command_line *cl);
 struct command_line * command_line_new (const int buf_len);
 void command_line_reset (struct command_line *cl);
 void command_line_add (struct command_line *cl, const unsigned char *buf, const int len);
+int man_read (struct epoll_ptr_data *epd,struct management *man);
+void man_output_standalone (struct epoll_ptr_data *epd,struct management *man, volatile int *signal_received);
+int man_standalone_event_loop (struct epoll_ptr_data *epd,struct management *man, volatile int *signal_received, const time_t expire);
+void man_wait_for_client_connection (struct epoll_ptr_data *epd,struct management *man, volatile int *signal_received,const time_t expire,unsigned int flags);
+void man_connection_settings_reset (struct management *man);
+void man_bytecount_output_client (struct management *man);
+void man_bytecount_output_server (struct management *man, unsigned long long bytes_in_total,unsigned long long bytes_out_total,struct man_def_auth_context *mdac);
 #endif
 

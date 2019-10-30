@@ -387,7 +387,7 @@ void hmac_ctx_init (HMAC_CTX *ctx, const uint8_t *key, int key_len, const EVP_MD
 	//HMAC_CTX_init (ctx);
 	HMAC_CTX_reset(ctx);
 	HMAC_Init_ex (ctx, key, key_len, kt, NULL);
-	assert (HMAC_size (ctx) <= key_len);
+	assert (HMAC_size (ctx) <= (size_t)key_len);
 }
 
 void hmac_ctx_cleanup(HMAC_CTX *ctx)

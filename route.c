@@ -4,7 +4,7 @@
 
 void do_init_route_list (struct epoll_ptr_data *epd,struct options *options)
 {
-	char gw[64]={0,};
+	char gw[128]={0,};
 
 	int dev = dev_type_enum (options->dev, options->dev_type);
 	int metric = 0;

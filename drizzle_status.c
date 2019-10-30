@@ -3,8 +3,8 @@
 
 int drizzle_status(struct main_data *md){
 	int ret=0;
-	struct options *opt=NULL;
-	opt = md->opt;
+	//struct options *opt=NULL;
+	//opt = md->opt;
 
 	struct pth_timer_data *p_t_d=NULL;
 	p_t_d =malloc(sizeof(struct pth_timer_data));
@@ -196,6 +196,6 @@ int drizzle_status_thd(struct pth_timer_data *p_t_d){
 #endif
 
 	}
-
+	return 0;
 }
 

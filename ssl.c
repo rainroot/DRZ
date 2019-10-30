@@ -416,7 +416,7 @@ void tls1_P_hash(const md_kt_t *md_kt,uint8_t *sec,int sec_len,uint8_t *seed,int
 	int chunk=0;
 	HMAC_CTX *ctx;
 	HMAC_CTX *ctx_tmp;
-	char *A1 = malloc(MAX_HMAC_KEY_LENGTH);
+	unsigned char *A1 = malloc(MAX_HMAC_KEY_LENGTH);
 	memset(A1,0x00,MAX_HMAC_KEY_LENGTH);
 
 	unsigned int A1_len;
@@ -450,7 +450,7 @@ void tls1_P_hash(const md_kt_t *md_kt,uint8_t *sec,int sec_len,uint8_t *seed,int
 		}
 		else
 		{
-			hmac_ctx_final(ctx, A1);
+			hmac_ctx_final(ctx,A1);
 			memcpy(out,A1,olen);
 			break;
 		}

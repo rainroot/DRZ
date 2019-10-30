@@ -169,3 +169,5 @@ int ns_compare(void *ad, void *bd,void *rb_param);
 int ts_compare(void *ad, void *bd,void *rb_param);
 void MM(char *fmt, ...);
 int min_int (int x, int y);
+int limit_max_set(void);
+

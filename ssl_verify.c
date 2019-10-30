@@ -210,7 +210,7 @@ result_t verify_cert(struct epoll_ptr_data *epd, openvpn_x509_cert_t *cert, int 
 			sfree(sha1_hash,SHA_DIGEST_LENGTH);
 		}
 #else
-		char * ca_hash = NULL;
+		unsigned char * ca_hash = NULL;
 		const EVP_MD *sha256 = EVP_sha256();
 		ca_hash = x509_get_sha256_fingerprint(cert);
 		if (memcmp(ca_hash, opt->verify_hash, EVP_MD_size(sha256)))

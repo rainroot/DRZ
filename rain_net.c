@@ -418,7 +418,7 @@ int tcp_server(char *local_ip, int port)
 	server_addr.sin_port = htons(port);
 	if(local_ip != NULL){
 		host = gethostbyname(local_ip);
-		if(host < 0){
+		if(host == NULL){
 			printf("########### ERROR #### %s %d ##\n",__func__,__LINE__);
 			exit(0);
 		}

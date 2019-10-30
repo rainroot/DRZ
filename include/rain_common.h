@@ -27,6 +27,7 @@
 #include <ssl.h>
 
 #ifdef OPENSSL_CONF
+#include <openssl/ssl.h>
 #include <ssl_openssl.h>
 #include <ssl_verify_openssl.h>
 #endif

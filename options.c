@@ -1068,7 +1068,7 @@ void option_iroute_ipv6 (struct options *o, const char *prefix_str)
 	ir = malloc(sizeof(struct iroute_ipv6));
 	memset(ir,0x00,sizeof(struct iroute_ipv6));
 
-	if ( get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL) < 0 )
+	if ( get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL) == false )
 	{
 		MM("in --iroute-ipv6 %s: Bad IPv6 prefix specification \n",prefix_str);
 		free(ir);
@@ -2993,6 +2993,7 @@ void usage (void)
 			o.handshake_window, o.transition_window);
 	fflush(fp);
 #endif
+	printf(" %s ",usage_message);
 	exit(0);
 }
 
@@ -3354,6 +3355,9 @@ void read_config_file (struct options *options,char *file,char *top_file,const i
 	char line[OPTION_LINE_SIZE];
 	char *p[MAX_PARMS];
 
+	if(top_line){}
+	if(top_file){}
+
 	if (streq (file, "stdin")){
 		fp = stdin;
 	}else{
@@ -3366,7 +3370,7 @@ void read_config_file (struct options *options,char *file,char *top_file,const i
 		{
 			int offset = 0;
 			int ret = 0;
-			int xx = 0;
+			//int xx = 0;
 			memset(&p,0x00,sizeof(p));
 			++line_num;
 			if (line_num == 1 && strncmp (line, "\xEF\xBB\xBF", 3) == 0){
@@ -5148,7 +5152,7 @@ void add_option(struct options *options, char *p[],char *file,int line,const uns
 			netmask = p[2];
 		}
 		if(epd != NULL){
-			printf("############## %s %d %s %s ##########\n",__func__,__LINE__,p[0],p[1],p[2]);
+			//printf("############## %s %d %s %s ##########\n",__func__,__LINE__,p[0],p[1],p[2]);
 			option_iroute (options, p[1], netmask,epd);
 		}
 	}

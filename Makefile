@@ -4,7 +4,7 @@
 #CFLAGS= -g -O2 -Wall -W  -I./ -I./include ${M_INC}
 #CFLAGS= -march=core-avx-i -pipe -mtune=generic -mfpmath=both -O4 -Wall -W  -I./ -I./include ${M_INC}
 #CFLAGS= -O2 -march=core-avx-i -pipe -mtune=generic -mfpmath=both -Wall -W  -I./ -I./include ${M_INC}
-CFLAGS= -g -march=core-avx-i -pipe -mtune=generic -mfpmath=both -Wall -W  -I./ -I./include ${M_INC}
+CFLAGS= -g -std=gnu99 -march=core-avx-i -pipe -mtune=generic -mfpmath=both -Wall -W  -I./ -I./include ${M_INC}
 LDFLAGS= ${M_LIB} 
 
 OBJS = main.o rain_epoll.o  rain_timer.o  rain_tun.o handler.o rain_net.o linkedlist.o \

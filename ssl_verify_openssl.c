@@ -259,7 +259,7 @@ err:
 		subject_bio = NULL;
 	}
 
-	ERR_remove_state(0);
+	//ERR_remove_state(0); //????
 	return subject;
 }
 

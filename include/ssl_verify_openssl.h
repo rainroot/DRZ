@@ -17,6 +17,7 @@ int verify_callback (int preverify_ok, X509_STORE_CTX * ctx);
 unsigned char * x509_get_sha1_hash (X509 *cert);
 char * x509_get_subject (X509 *cert);
 bool x509_get_username (char *common_name, int cn_len, char * x509_username_field, X509 *peer_cert);
+unsigned char * x509_get_sha256_fingerprint(X509 *cert);
 #if 0
 unsigned char * x509_get_sha1_hash (X509 *cert, struct gc_arena *gc);
 char * x509_get_subject (X509 *cert, struct gc_arena *gc);

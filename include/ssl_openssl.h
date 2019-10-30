@@ -41,6 +41,7 @@ int key_state_write_ciphertext (struct key_state_ssl *ks_ssl, char *buf,int size
 int key_state_read_ciphertext (struct key_state_ssl *ks_ssl, char *buf, int size ,int maxlen);
 int key_state_write_plaintext_const (struct key_state_ssl *ks_ssl, char *data, int len);
 int key_state_write_plaintext (struct key_state_ssl *ks_ssl, char *buf,int size);
+void key_state_ssl_remove(struct epoll_ptr_data *epd,bool all);
 
 int tls_version_max(void);
 const char * get_ssl_library_version(void);

@@ -3,7 +3,7 @@
 int tunfd_route_tun_out_in(struct epoll_ptr_data *epd,struct packet_idx_tree_data *get_pitd,struct internal_header *ih)
 {
 	int ret = -1;
-	int all_send_ret = 0;
+	//int all_send_ret = 0;
 	struct main_data *md = NULL;
 	struct options *opt  = NULL;
 	struct iphdr *iph=NULL;
