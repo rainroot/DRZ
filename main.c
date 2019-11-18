@@ -301,7 +301,7 @@ int process_init(struct main_data *md)
 	send_thread_process(md,THREAD_SEND_TUN);
 
 #ifdef ENABLE_MANAGEMENT
-	mngt_process(md);
+	//mngt_process(md);
 #endif
 
 

@@ -3542,7 +3542,7 @@ void read_config_file (struct options *options,char *file,char *top_file,const i
 				check_inline_file_via_fp (fp, p);
 				add_option (options, p, file, line_num, permission_mask, option_types_found,epd);
 			}
-			printf("##################### %s %d #############\n",__func__,__LINE__);
+			//printf("##################### %s %d #############\n",__func__,__LINE__);
 #if 0
 			for(xx = 0 ; xx < ret ; xx++){
 				sfree(p[xx],0);

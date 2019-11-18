@@ -149,7 +149,7 @@ char * route_string (struct route_ipv4 *r)
 {
 	char *out = malloc(256);
 	memset(out,0x00,256);
-
+	int out_len = 0;
 	char network[64]={0,};
 	char netmask[64]={0,};
 	char gateway[64]={0,};
@@ -158,9 +158,9 @@ char * route_string (struct route_ipv4 *r)
 	print_in_addr_t(r->netmask,0,netmask);
 	print_in_addr_t(r->gateway,0,gateway);
 
-	out += sprintf (out,"ROUTE network %s netmask %s gateway %s",network,netmask,gateway);
+	out_len += sprintf (out+out_len,"ROUTE network %s netmask %s gateway %s",network,netmask,gateway);
 	if (r->flags & RT_METRIC_DEFINED){
-		out += sprintf (out, " metric %d", r->metric);
+		out_len += sprintf (out+out_len, " metric %d", r->metric);
 	}
 	return out;
 }
@@ -861,24 +861,25 @@ void print_default_gateway(struct route_gateway_info *rgi)
 	{
 		char *out = malloc(256);
 		memset(out,0x00,256);
-		sprintf (out, "ROUTE_GATEWAY");
+		int out_len = 0;
+		out_len += sprintf (out+out_len, "ROUTE_GATEWAY");
 		if (rgi->flags & RGI_ON_LINK){
-			out += sprintf (out, " ON_LINK");
+			out_len += sprintf (out+out_len, " ON_LINK");
 		}else{
 			print_in_addr_t (rgi->gateway.addr, 0,str0);
-			out += sprintf (out, " %s",str0);
+			out_len += sprintf (out+out_len, " %s",str0);
 		}
 		if (rgi->flags & RGI_NETMASK_DEFINED){
 			print_in_addr_t (rgi->gateway.netmask, 0,str1);
-			out += sprintf (out, "/%s", str1);
+			out_len += sprintf (out+out_len, "/%s", str1);
 		}
 		if (rgi->flags & RGI_IFACE_DEFINED){
-			out += sprintf (out, " IFACE=%s", rgi->iface);
+			out_len += sprintf (out+out_len, " IFACE=%s", rgi->iface);
 		}
 		if (rgi->flags & RGI_HWADDR_DEFINED){
-			//out += sprintf (out, " HWADDR=%s", format_hex_ex (rgi->hwaddr, 6, 0, 1, ":", &gc));
+			//out_len += sprintf (out+out_len, " HWADDR=%s", format_hex_ex (rgi->hwaddr, 6, 0, 1, ":", &gc));
 		}
-		MM("%s\n",out);
+		MM("###  %s %d %s ### \n",__func__,__LINE__,out);
 		free(out);
 	}
 }
@@ -945,6 +946,7 @@ void add_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,str
 	}
 
 	char *out = malloc(256);
+	int out_len = 0;
 	memset(out,0x00,256);
 
 	print_in_addr_t(r->network,0,network);
@@ -956,14 +958,14 @@ void add_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,str
 		goto done;
 	}
 
-	out += sprintf (out, "%s add -net %s netmask %s",ROUTE_PATH,network,netmask);
+	out_len += sprintf (out+out_len, "%s add -net %s netmask %s",ROUTE_PATH,network,netmask);
 	if (r->flags & RT_METRIC_DEFINED){
-		out += sprintf(out, " metric %d",r->metric);
+		out_len += sprintf(out+out_len, " metric %d",r->metric);
 	}
 	if (is_on_link (is_local_route, flags, rgi)){
-		out += sprintf(out," dev %s",rgi->iface);
+		out_len += sprintf(out+out_len," dev %s",rgi->iface);
 	}else{
-		out += sprintf(out, " gw %s",gateway);
+		out_len += sprintf(out+out_len, " gw %s",gateway);
 	}
 	status = system(out);
 printf("## %s %d %s ##\n",__func__,__LINE__,out);
@@ -1024,6 +1026,7 @@ void add_route_ipv6 (struct route_ipv6 *r6,struct options *opt , unsigned int fl
 
 	char *out = malloc(256);
 	memset(out,0x00,256);
+	int out_len = 0;
 	MM("add_route_ipv6(%s/%d -> %s metric %d) dev %s \n",network, r6->netbits, gateway, r6->metric, opt->dev);
 
 	if (dev == DEV_TYPE_TAP && !(r6->metric_defined && r6->metric == 0 ))
@@ -1031,12 +1034,12 @@ void add_route_ipv6 (struct route_ipv6 *r6,struct options *opt , unsigned int fl
 		gateway_needed = true;
 	}
 
-	out += sprintf(out, "%s -A inet6 add %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
+	out_len += sprintf(out+out_len, "%s -A inet6 add %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
 	if (gateway_needed){
-		out += sprintf(out, " gw %s",gateway);
+		out_len += sprintf(out+out_len, " gw %s",gateway);
 	}
 	if (r6->metric_defined && r6->metric > 0 ){
-		out += sprintf(out, " metric %d", r6->metric);
+		out_len += sprintf(out+out_len, " metric %d", r6->metric);
 	}
 
 	status = system(out);
@@ -1061,6 +1064,7 @@ void delete_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,
 #endif	
 	char *out = malloc(256);
 	memset(out,0x00,256);
+	int out_len = 0;
 
 	print_in_addr_t(r->network,0,network);
 	print_in_addr_t(r->netmask,0,netmask);
@@ -1071,9 +1075,9 @@ void delete_route (struct route_ipv4 *r, struct options *opt,unsigned int flags,
 		goto done;
 	}
 
-	out += sprintf(out, "%s del -net %s netmask %s", ROUTE_PATH,network,netmask);
+	out_len += sprintf(out+out_len, "%s del -net %s netmask %s", ROUTE_PATH,network,netmask);
 	if (r->flags & RT_METRIC_DEFINED){
-		out += sprintf(out, " metric %d",r->metric);
+		out_len += sprintf(out+out_len, " metric %d",r->metric);
 	}
 	system(out);
 	printf("## %s %d %s ##\n",__func__,__LINE__,out);
@@ -1098,7 +1102,7 @@ void delete_route_ipv6 (struct route_ipv6 *r6,struct options *opt, unsigned int 
 
 	char *out = malloc(256);
 	memset(out,0x00,256);
-
+	int out_len = 0;
 
 	network = print_in6_addr_netbits_only( r6->network, r6->netbits);
 	gateway = print_in6_addr( r6->gateway, 0);
@@ -1117,12 +1121,12 @@ void delete_route_ipv6 (struct route_ipv6 *r6,struct options *opt, unsigned int 
 		gateway_needed = true;
 	}
 
-	out += sprintf (out, "%s -A inet6 del %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
+	out_len += sprintf (out+out_len, "%s -A inet6 del %s/%d dev %s", ROUTE_PATH,network,r6->netbits,opt->dev);
 	if (gateway_needed){
-		out += sprintf(out, " gw %s",gateway);
+		out_len += sprintf(out+out_len, " gw %s",gateway);
 	}
 	if (r6->metric_defined && r6->metric > 0 ){
-		out += sprintf(out, "  metric %d",r6->metric);
+		out_len += sprintf(out+out_len, "  metric %d",r6->metric);
 	}
 
 	MM("## %s %d %s ##\n",__func__,__LINE__,out);

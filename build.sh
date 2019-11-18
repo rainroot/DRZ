@@ -39,3 +39,4 @@ RANLIB=${CROSS_COMPILE}ranlib \
 make
 
 
+#coredumpctl -o target dump /home/user/test/test_program
